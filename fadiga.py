@@ -59,6 +59,16 @@ tau_xy = 0
 tau_ab = np.sqrt(((sigma_x+sigma_y)/2)**2 + tau_xy**2)
 print("tau_ab = ",tau_ab)
 sigma1_a = (sigma_x+sigma_y)/2 + tau_ab
+sigma2_a = 0
 sigma3_a = (sigma_x+sigma_y)/2 - tau_ab
-print(sigma1_a)
-print(sigma3_a)
+sigma_vm = np.sqrt(sigma1_a**2 - sigma1_a*sigma2_a + sigma2_a**2)
+print("sigma_vm = ",sigma_vm)
+
+Se = 0.5*Sut
+A95 = 0.05*d*b
+d_equi = np.sqrt(A95/0.0766)
+if d < 0.3:
+    C_tamanho = 1
+if d > 0.3 and d < 10:
+    C_tamanho = 0.869*(d_equi)**(-0.097)
+print(C_tamanho)
