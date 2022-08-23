@@ -21,25 +21,44 @@ print("M = ",M," lb*in")
 I = (b*d**3)/12
 print("I = ",I," in^4")
 c = d/2 
-sigma_a = M*c/I
-print("sigma_a = ",sigma_a," psi")
+sigma_a_nom = M*c/I
+print("sigma_a_nom = ",sigma_a_nom," psi")
 #Pagina 372
 D_d = D/d
 r_d = r/d
 #Pagina 216
-#D_d_k = [3, 2, 1.3, 1.2, 1.1, 1.05, 1.01]
-#A_k = [0.90720, 0.93232, 0.95880, 0.99590, 1.01650, 1.02260, 0.96689]
-#b_k = [-0.33333, -0.30304, -0.27269, -0.23829, -0.21548, -0.19156, -0.15417]
-#Ddk_inter = [2.5, 1.9, 1.5, 1.15, 1.07, 1.04]
+D_d_k  = np.array([3, 2, 1.3, 1.2, 1.1, 1.05])
+A_k = np.array([0.90720, 0.93232, 0.95880, 0.99590, 1.01650, 1.02260])
+b_k = [-0.33333, -0.30304, -0.27269, -0.23829, -0.21548, -0.19156]
+Ak_interp = interpolate.interp1d(D_d_k ,A_k, 'linear')
+bk_interp = interpolate.interp1d(D_d_k ,b_k, 'linear')
+x = D/d
+ya = Ak_interp(x)
+yb = bk_interp(x)
+print("A = ",ya)
+print("b = ",yb)
+Kt = ya*(r/d)**yb
+print("Kt = ",Kt)
 
-D_d_k  = np.array([3, 2, 1.3, 1.2, 1.1, 1.05, 1.01])
-A_k = np.array([0.90720, 0.93232, 0.95880, 0.99590, 1.01650, 1.02260, 0.96689])
-plt.scatter(D_d_k ,A_k)
-plt.plot(D_d_k ,A_k,'o--')
-plt.show()
+Sut_q = [50, 55, 60, 70, 80, 90, 100, 110, 120, 130, 140, 160, 180, 200, 220, 240]
+raiz_a = [0.130, 0.118, 0.108, 0.093, 0.080, 0.070, 0.062, 0.055, 0.049, 0.044, 0.039, 0.031, 0.024, 0.018, 0.013, 0.009]
+raiza_interp = interpolate.interp1d(Sut_q, raiz_a, 'linear')
+x2 = Sut/1000
+y2 = raiza_interp(x2)
+print("raiz_a = ",y2)
+q = 1/(1+(y2/np.sqrt(r)))
+print("q = ",q)
 
-y_f = interpolate.interp1d(D_d_k ,A_k, 'linear')
-x = np.linspace(3,1.01,100)
-y = y_f(x)
-plt.scatter(x,y)
-plt.show()
+Kf = 1 + q*(Kt - 1)
+print("Kf = ",Kf)
+sigma_a = Kf*sigma_a_nom
+print("sigma_a = ",sigma_a)
+sigma_x = sigma_a
+sigma_y = 0
+tau_xy = 0
+tau_ab = np.sqrt(((sigma_x+sigma_y)/2)**2 + tau_xy**2)
+print("tau_ab = ",tau_ab)
+sigma1_a = (sigma_x+sigma_y)/2 + tau_ab
+sigma3_a = (sigma_x+sigma_y)/2 - tau_ab
+print(sigma1_a)
+print(sigma3_a)
